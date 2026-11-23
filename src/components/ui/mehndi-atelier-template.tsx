@@ -1393,83 +1393,65 @@ export default function MehndiAtelierTemplate({
             .to(".mat-hero-copy", { yPercent: 20, autoAlpha: 0.2, ease: "none" }, 0)
             .to(".mat-hero .mat-filigree", { scale: 1.12, ease: "none" }, 0)
         } else {
-          // MOBILE: Play both section animations separately!
+          // MOBILE: Strictly sequential, separate 2-screen hero presentation!
+          // Screen 1 (The House) -> Clean Page Transition -> Screen 2 (Bridal Collections) -> Collections
           proxy.grow = 1
           proxy.open = 0
           paint()
 
-          // 1. Section 1 (Panel L) Entrance Animation on page load
+          // Position Screen 2 below Screen 1 initially so they never mix
+          gsap.set(".mat-panel-r", { yPercent: 100 })
+          gsap.set(".mat-panel-l", { yPercent: 0, autoAlpha: 1 })
+
+          // 1. Screen 1 (Panel L) Entrance Animation on page load
           gsap
             .timeline({ defaults: { ease: "expo.out" }, delay: 0.15 })
-            .fromTo(".mat-panel-l", { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 1.4, ease: "expo.inOut" }, 0)
-            .fromTo(".mat-panel-l .mat-filigree .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 2.2, ease: "power2.inOut", stagger: 0.02 }, 0.4)
-            .from(".mat-panel-l .mat-filigree .mat-fl", { autoAlpha: 0, duration: 1, stagger: 0.015 }, 1.1)
-            .fromTo(".mat-split-mandala.is-l .mat-ring path", { "--draw": 1 }, { "--draw": 0, duration: 2.2, ease: "power2.inOut", stagger: 0.003 }, 0.5)
-            .from(".mat-split-mandala.is-l", { rotate: -90, duration: 2.5 }, 0.4)
-            .from(".mat-hero-title .mat-word", { yPercent: 115, rotate: 3, duration: 1.3, stagger: 0.14 }, 0.8)
-            .fromTo(".mat-hero-flourish .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 1.4, ease: "power2.inOut" }, 1.1)
-            .from(".mat-hero-flourish .mat-fl", { autoAlpha: 0, scale: 0, transformOrigin: "50% 50%", duration: 0.8, stagger: 0.04 }, 1.3)
-            .from(".mat-panel-l .mat-rise", { y: 22, autoAlpha: 0, duration: 1, stagger: 0.08 }, 1.1)
+            .fromTo(".mat-panel-l .mat-filigree .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 2.0, ease: "power2.inOut", stagger: 0.02 }, 0)
+            .from(".mat-panel-l .mat-filigree .mat-fl", { autoAlpha: 0, duration: 0.9, stagger: 0.015 }, 0.6)
+            .fromTo(".mat-split-mandala.is-l .mat-ring path", { "--draw": 1 }, { "--draw": 0, duration: 2.0, ease: "power2.inOut", stagger: 0.003 }, 0.1)
+            .from(".mat-split-mandala.is-l", { rotate: -90, duration: 2.2 }, 0)
+            .from(".mat-hero-title .mat-word", { yPercent: 115, rotate: 3, duration: 1.2, stagger: 0.12 }, 0.3)
+            .fromTo(".mat-hero-flourish .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 1.2, ease: "power2.inOut" }, 0.6)
+            .from(".mat-hero-flourish .mat-fl", { autoAlpha: 0, scale: 0, transformOrigin: "50% 50%", duration: 0.7, stagger: 0.04 }, 0.8)
+            .from(".mat-panel-l .mat-rise", { y: 20, autoAlpha: 0, duration: 0.9, stagger: 0.08 }, 0.6)
 
-          // Section 1 (Panel L) Scroll Pin Animation: plays separately when Panel L reaches navbar
-          const mobilePanelLTl = gsap.timeline({
+          // Master Mobile Hero Scroll Timeline:
+          // Pinned as one cohesive presentation under the navbar
+          const mobileHeroTl = gsap.timeline({
             scrollTrigger: {
-              trigger: ".mat-panel-l",
+              trigger: ".mat-hero",
               start: () => "top " + (navbar?.offsetHeight || 48) + "px",
-              end: "+=500",
+              end: "+=1100",
               pin: true,
-              scrub: 0.6,
+              scrub: 0.8,
               anticipatePin: 1,
               invalidateOnRefresh: true,
             },
           })
 
-          mobilePanelLTl
-            .to(".mat-split-mandala.is-l", { rotate: 80, ease: "none" }, 0)
-            .to(".mat-hero-copy", { yPercent: 18, autoAlpha: 0.25, ease: "none" }, 0)
-            .to(".mat-panel-l .mat-hero-fil", { scale: 1.12, ease: "none" }, 0)
+          // Part 1 Scroll: Mandala turns and copy reacts while Screen 1 is in full view
+          mobileHeroTl
+            .to(".mat-split-mandala.is-l", { rotate: 80, ease: "none", duration: 1 }, 0)
+            .to(".mat-hero-copy", { yPercent: -15, autoAlpha: 0.35, ease: "none", duration: 1 }, 0)
 
-          // 2. Section 2 (Panel R) Entrance Animation: triggers when Panel R enters view
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: ".mat-panel-r",
-                start: "top 85%",
-                toggleActions: "play none none none",
-              },
-              defaults: { ease: "expo.out" },
-            })
-            .fromTo(".mat-panel-r", { clipPath: "inset(100% 0 0 0)" }, { clipPath: "inset(0 0 0 0%)", duration: 1.4, ease: "expo.inOut" }, 0)
-            .fromTo(".mat-panel-r .mat-filigree .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 2.2, ease: "power2.inOut", stagger: 0.02 }, 0.3)
-            .from(".mat-panel-r .mat-filigree .mat-fl", { autoAlpha: 0, duration: 1, stagger: 0.015 }, 1.0)
-            .fromTo(".mat-split-mandala.is-r .mat-ring path", { "--draw": 1 }, { "--draw": 0, duration: 2.2, ease: "power2.inOut", stagger: 0.003 }, 0.4)
-            .from(".mat-split-mandala.is-r", { rotate: -90, duration: 2.5 }, 0.3)
-            .fromTo(".mat-win-line", { "--draw": 1 }, { "--draw": 0, duration: 2, ease: "power2.inOut", stagger: 0.15 }, 0.4)
-            .fromTo(".mat-win-img", { scale: 1.25 }, { scale: 1, duration: 2.4, ease: "power3.out" }, 0.2)
-            .from(".mat-hero-seal", { scale: 0, rotate: -180, duration: 1.4, ease: "back.out(1.6)" }, 0.8)
-            .from(".mat-panel-r .mat-rise", { y: 22, autoAlpha: 0, duration: 1, stagger: 0.08 }, 0.7)
+          // Clean Slide Transition: Screen 2 slides up to take over the screen
+          // Screen 1 and Screen 2 are strictly separated and NEVER mixed!
+          mobileHeroTl
+            .to(".mat-panel-l", { yPercent: -35, autoAlpha: 0, ease: "power2.inOut", duration: 1 }, 1.0)
+            .fromTo(
+              ".mat-panel-r",
+              { yPercent: 100 },
+              { yPercent: 0, ease: "power2.inOut", duration: 1 },
+              1.0
+            )
 
-          // Section 2 (Panel R) Scroll Pin Animation: plays separately when Panel R reaches navbar
-          const mobilePanelRTl = gsap.timeline({
-            scrollTrigger: {
-              trigger: ".mat-panel-r",
-              start: () => "top " + (navbar?.offsetHeight || 48) + "px",
-              end: "+=650",
-              pin: true,
-              scrub: 0.6,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            },
-          })
-
-          mobilePanelRTl
-            .to(proxy, {
-              open: 1,
-              ease: "none",
-              onUpdate: paint,
-            }, 0)
-            .to(".mat-split-mandala.is-r", { rotate: 80, ease: "none" }, 0)
-            .to(".mat-panel-r .mat-hero-fil", { scale: 1.12, ease: "none" }, 0)
+          // Part 2 Scroll: Screen 2 is now in full view!
+          // Right mandala spins, photo gently scales inside the arch, filigree responds
+          // The Mughal arch, double gold lines, seal, and label remain pristine and unmixed!
+          mobileHeroTl
+            .to(".mat-split-mandala.is-r", { rotate: 80, ease: "none", duration: 1.2 }, 2.0)
+            .to(".mat-win-img", { scale: 1.08, ease: "none", duration: 1.2 }, 2.0)
+            .to(".mat-panel-r .mat-hero-fil", { scale: 1.08, ease: "none", duration: 1.2 }, 2.0)
         }
         gsap.to(".mat-seal-turn", { rotate: 360, svgOrigin: "0 0", duration: 26, ease: "none", repeat: -1 })
 
@@ -2467,9 +2449,9 @@ const CSS = `
   .mat-sub{position:static;opacity:1;visibility:visible;transform:none;min-width:0;padding:4px 0 12px 16px;background:none;border:0;box-shadow:none;display:flex;flex-direction:column;gap:4px}
   .mat-sub::before,.mat-sub-rosette{display:none}
   .mat-sub a{color:color-mix(in oklab,var(--gold-hi) 90%,#fff);font-size:16px;padding:10px 8px;min-height:44px;display:flex;align-items:center}
-  .mat-hero{display:flex;flex-direction:column;height:auto;min-height:0;overflow:visible}
-  .mat-panel-l{position:relative;width:100%;height:calc(100svh - 48px);min-height:520px;max-height:850px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;box-sizing:border-box}
-  .mat-panel-r{position:relative;width:100%;height:calc(100svh - 48px);min-height:540px;max-height:850px;overflow:hidden;box-sizing:border-box}
+  .mat-hero{position:relative;display:block;height:calc(100svh - 48px);min-height:520px;max-height:850px;overflow:hidden}
+  .mat-panel-l{position:absolute;inset:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;overflow:hidden;box-sizing:border-box;z-index:2}
+  .mat-panel-r{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;box-sizing:border-box;z-index:3}
   .mat-hero-frame{display:none}
   .mat-hero-split{display:none}
   .mat-hero-sill{display:none}
