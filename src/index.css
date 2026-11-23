@@ -5,6 +5,9 @@ html, body {
   padding: 0;
   width: 100%;
   min-height: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Lenis Smooth Scroll Engine */
@@ -28,7 +31,7 @@ html.lenis, html.lenis body {
   pointer-events: none;
 }
 
-/* GPU Hardware Acceleration & Layer Promotion */
+/* Smooth Hardware Acceleration & Interaction */
 .mat-hero,
 .mat-panel,
 .mat-win-img,
@@ -39,28 +42,6 @@ html.lenis, html.lenis body {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
-}
-
-.mat-split-mandala {
-  will-change: transform;
-}
-
-.mat-hero-copy {
-  will-change: transform, opacity;
-}
-
-.mat-seal-turn {
-  will-change: transform;
-}
-
-/* Off-screen Section Render Deferral (60fps Scroll Boost) */
-.mat-sellers,
-.mat-edit,
-.mat-heritage,
-.mat-studysec,
-.mat-footer {
-  content-visibility: auto;
-  contain-intrinsic-size: 800px;
 }
 
 /* Custom Gold Scrollbar */

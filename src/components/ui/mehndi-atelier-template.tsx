@@ -1367,36 +1367,60 @@ export default function MehndiAtelierTemplate({
           .from(".mat-panel-r .mat-rise", { y: 22, autoAlpha: 0, duration: 1, stagger: 0.08 }, 1.6)
 
         // hero scroll: the arch swings open into the whole panel; the mandala turns
-        // pins right when the top brand band has scrolled away (disappeared)
-        const heroScrollTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: ".mat-hero",
-            start: () => "top " + (navbar?.offsetHeight || 76) + "px",
-            end: "+=900",
-            pin: true,
-            scrub: 0.6,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        })
+        // On desktop: pins .mat-hero right when the top brand band has scrolled away
+        // On mobile: pins .mat-panel-r when it scrolls into view below the navbar so the user watches the arch morph
+        if (wide) {
+          const heroScrollTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: ".mat-hero",
+              start: () => "top " + (navbar?.offsetHeight || 76) + "px",
+              end: "+=900",
+              pin: true,
+              scrub: 0.6,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          })
 
-        heroScrollTl
-          .to(proxy, {
-            open: 1,
-            ease: "none",
-            onUpdate: paint,
-          }, 0)
-          .to(".mat-split-mandala", { rotate: 80, ease: "none" }, 0)
-          .to(".mat-hero-copy", { yPercent: 20, autoAlpha: 0.2, ease: "none" }, 0)
-          .to(".mat-hero .mat-filigree", { scale: 1.12, ease: "none" }, 0)
+          heroScrollTl
+            .to(proxy, {
+              open: 1,
+              ease: "none",
+              onUpdate: paint,
+            }, 0)
+            .to(".mat-split-mandala", { rotate: 80, ease: "none" }, 0)
+            .to(".mat-hero-copy", { yPercent: 20, autoAlpha: 0.2, ease: "none" }, 0)
+            .to(".mat-hero .mat-filigree", { scale: 1.12, ease: "none" }, 0)
+        } else {
+          const mobileHeroScrollTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: ".mat-panel-r",
+              start: () => "top " + (navbar?.offsetHeight || 48) + "px",
+              end: "+=650",
+              pin: true,
+              scrub: 0.6,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          })
+
+          mobileHeroScrollTl
+            .to(proxy, {
+              open: 1,
+              ease: "none",
+              onUpdate: paint,
+            }, 0)
+            .to(".mat-split-mandala.is-r", { rotate: 80, ease: "none" }, 0)
+            .to(".mat-panel-r .mat-hero-fil", { scale: 1.12, ease: "none" }, 0)
+        }
         gsap.to(".mat-seal-turn", { rotate: 360, svgOrigin: "0 0", duration: 26, ease: "none", repeat: -1 })
 
         // twin heading: the medallion turns in, the words slide off it
         gsap
           .timeline({ scrollTrigger: { trigger: ".mat-twin", start: "top 82%", toggleActions: "play none none none" }, defaults: { ease: "expo.out" } })
           .from(".mat-twin .mat-emblem", { scale: 0, rotate: -180, duration: 1.4 }, 0)
-          .from(".mat-twin-l", { x: 60, autoAlpha: 0, duration: 1.3 }, 0.2)
-          .from(".mat-twin-r", { x: -60, autoAlpha: 0, duration: 1.3 }, 0.2)
+          .from(".mat-twin-l", { [wide ? "x" : "y"]: wide ? 60 : 22, autoAlpha: 0, duration: 1.3 }, 0.2)
+          .from(".mat-twin-r", { [wide ? "x" : "y"]: wide ? -60 : 22, autoAlpha: 0, duration: 1.3 }, 0.2)
           .fromTo(".mat-twin .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 1.6, ease: "power2.inOut" }, 0.3)
           .from(".mat-twin .mat-fl", { autoAlpha: 0, duration: 0.8 }, 0.9)
           .from(".mat-sellers > .mat-lede", { y: 18, autoAlpha: 0, duration: 1 }, 0.5)
@@ -1425,7 +1449,7 @@ export default function MehndiAtelierTemplate({
           .timeline({ scrollTrigger: { trigger: ".mat-bento", start: "top 78%", toggleActions: "play none none none" }, defaults: { ease: "expo.out" } })
           .from(".mat-bento > *", { clipPath: "inset(10% 10% 10% 10%)", autoAlpha: 0, duration: 1.3, stagger: 0.1 }, 0)
           .fromTo(".mat-frame-box i", { scaleX: 0, scaleY: 0 }, { scaleX: 1, scaleY: 1, duration: 1.2, ease: "expo.inOut", stagger: 0.05 }, 0.5)
-          .from(".mat-design-row", { x: 26, autoAlpha: 0, duration: 0.8, stagger: 0.06 }, 0.6)
+          .from(".mat-design-row", { [wide ? "x" : "y"]: wide ? 26 : 16, autoAlpha: 0, duration: 0.8, stagger: 0.06 }, 0.6)
           .fromTo(".mat-bento .mat-filigree .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 2, ease: "power2.inOut" }, 0.4)
         gsap.fromTo(".mat-tile-img", { yPercent: -5 }, { yPercent: 5, ease: "none", scrollTrigger: { trigger: ".mat-bento", start: "top bottom", end: "bottom top", scrub: true } })
 
@@ -2349,31 +2373,34 @@ const CSS = `
 }
 @container (max-width: 900px){
   .mat-search{display:none}
-  .mat-band-in{grid-template-columns:auto 1fr auto;height:78px;gap:12px}
+  .mat-band-in{grid-template-columns:auto 1fr auto;height:68px;gap:8px;padding:0 12px}
   .mat-band-side.is-left span{display:none}
-  .mat-wordmark{justify-content:center;font-size:clamp(28px,8cqw,40px)}
+  .mat-wordmark{justify-content:center;font-size:clamp(22px,6cqw,34px);letter-spacing:.04em}
   .mat-only-narrow{display:grid}
   .mat-only-wide{display:none}
-  .mat-burger{display:flex}
-  .mat-navbar-in{justify-content:center;height:48px}
-  .mat-nav{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;padding:8px 16px 18px;background:var(--deep);border-bottom:1px solid var(--line);max-height:70vh;overflow:auto}
-  .mat-nav.is-open{display:flex}
-  .mat-tab{flex-direction:column;border:0;border-bottom:1px solid color-mix(in oklab,var(--gold) 25%,transparent)}
-  .mat-tab:last-child{border-right:0}
-  .mat-tab > a{padding:16px 4px;font-size:13px}
+  .mat-navbar-in{display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 12px}
+  .mat-burger{display:flex;order:1;position:static;min-height:44px;min-width:44px;align-items:center;gap:8px;cursor:pointer}
+  .mat-mini-mark{position:static;order:2;opacity:0;transform:scale(0.92);transition:opacity .35s,transform .35s cubic-bezier(.2,.8,.2,1);font-size:clamp(12px,3.2cqw,15px);letter-spacing:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(210px,50vw);padding:0}
+  .mat-navbar.is-stuck .mat-mini-mark{opacity:1;transform:scale(1);pointer-events:auto}
+  .mat-mini-bag{position:static;order:3;opacity:1;transform:none;pointer-events:auto;min-width:44px;min-height:44px}
+  .mat-nav{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;padding:12px 18px 24px;background:color-mix(in oklab,var(--deep) 96%,var(--maroon));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:2px solid var(--gold);box-shadow:0 24px 48px -12px rgba(0,0,0,.65);max-height:calc(100vh - 56px);overflow-y:auto;z-index:100}
+  .mat-nav.is-open{display:flex;animation:mat-menu-slide .35s cubic-bezier(.16,1,.3,1)}
+  .mat-tab{flex-direction:column;border:0;border-bottom:1px solid color-mix(in oklab,var(--gold) 25%,transparent);padding:2px 0}
+  .mat-tab:last-child{border-bottom:0}
+  .mat-tab > a{padding:14px 6px;font-size:13.5px;letter-spacing:.18em;min-height:44px;display:flex;align-items:center}
   .mat-tab::after{display:none}
-  .mat-sub{position:static;opacity:1;visibility:visible;transform:none;min-width:0;padding:0 0 10px 14px;background:none;border:0;box-shadow:none}
+  .mat-sub{position:static;opacity:1;visibility:visible;transform:none;min-width:0;padding:4px 0 12px 16px;background:none;border:0;box-shadow:none;display:flex;flex-direction:column;gap:4px}
   .mat-sub::before,.mat-sub-rosette{display:none}
-  .mat-sub a{color:var(--on-dark);font-size:17px;padding:8px 6px}
+  .mat-sub a{color:color-mix(in oklab,var(--gold-hi) 90%,#fff);font-size:16px;padding:10px 8px;min-height:44px;display:flex;align-items:center}
   .mat-hero{grid-template-columns:1fr;grid-template-rows:auto auto;height:auto;min-height:0}
-  .mat-panel-l{min-height:max(560px,calc(var(--h) * .78))}
-  .mat-panel-r{min-height:max(580px,calc(var(--h) * .72))}
+  .mat-panel-l{min-height:max(500px,calc(100svh - 48px));display:flex;flex-direction:column;justify-content:center}
+  .mat-panel-r{height:calc(100svh - 48px);min-height:540px;max-height:850px}
   .mat-split-mandala{width:min(110%,560px)}
   .mat-split-mandala.is-l{right:auto;left:50%;top:100%;translate:-50% -50%}
   .mat-split-mandala.is-r{left:50%;top:0;translate:-50% -50%}
   .mat-hero-split{display:none}
-  .mat-hero-title{font-size:clamp(64px,17cqw,120px)}
-  .mat-twin{grid-template-columns:1fr;gap:10px}
+  .mat-hero-title{font-size:clamp(48px,14cqw,96px)}
+  .mat-twin{grid-template-columns:1fr;gap:12px}
   .mat-twin-l,.mat-twin-r{text-align:center}
   .mat-twin-mid{margin:0 auto;order:-1}
   .mat-study{grid-template-columns:1fr}
@@ -2381,31 +2408,40 @@ const CSS = `
   .mat-heritage-in{max-width:640px}
   .mat-footer-in{grid-template-columns:1fr}
 }
+@keyframes mat-menu-slide{
+  from{opacity:0;transform:translateY(-8px)}
+  to{opacity:1;transform:translateY(0)}
+}
 @container (max-width: 640px){
   .mat-strip-in{height:34px}
-  .mat-marquee-track{line-height:34px}
-  .mat-band-in{height:70px;padding:0 10px}
-  .mat-icon-btn{width:38px;height:38px}
-  .mat-hero-fil{width:110px}
-  .mat-hero-copy{padding:56px 22px}
-  .mat-products{grid-template-columns:1fr 1fr;gap:14px 12px}
-  .mat-product h3{font-size:18px}
-  .mat-quick{opacity:1;transform:translate(-50%,0);height:34px;padding:0 14px;font-size:9.5px;letter-spacing:.16em}
+  .mat-marquee-track{line-height:34px;font-size:11px}
+  .mat-band-in{height:64px;padding:0 8px}
+  .mat-icon-btn{width:40px;height:40px}
+  .mat-hero-fil{width:90px}
+  .mat-hero-copy{padding:38px 18px;gap:14px}
+  .mat-hero-sub{font-size:16px;line-height:1.5}
+  .mat-photo-label{bottom:26px;left:16px;right:16px;gap:8px}
+  .mat-photo-title{font-size:clamp(26px,7cqw,36px)}
+  .mat-products{grid-template-columns:1fr 1fr;gap:16px 10px}
+  .mat-product h3{font-size:17px}
+  .mat-quick{opacity:1;transform:translate(-50%,0);height:36px;padding:0 12px;font-size:9px;letter-spacing:.14em}
   .mat-quick-long{display:none}
   .mat-quick-short{display:inline}
-  .mat-badge{top:24%;font-size:8px;padding:5px 8px}
+  .mat-badge{top:24%;font-size:8px;padding:4px 7px}
   .mat-bento{grid-template-columns:1fr}
   .mat-tile,.mat-designs{grid-column:auto}
-  .mat-tile{min-height:520px}
-  .mat-frame-box{padding:24px 18px}
+  .mat-tile{min-height:460px}
+  .mat-frame-box{padding:20px 14px;width:calc(100% - 24px)}
+  .mat-frame-box h3{font-size:26px}
   .mat-plates{grid-template-columns:1fr}
-  .mat-plate{min-height:300px}
+  .mat-plate{min-height:280px}
   .mat-paisley-l,.mat-paisley-r{display:none}
-  .mat-her-fil{width:90px}
-  .mat-heritage-p{font-size:18px}
-  .mat-study-flourish{margin-left:-20px}
-  .mat-footer-cols{grid-template-columns:1fr 1fr}
-  .mat-footer-bottom{flex-direction:column}
+  .mat-her-fil{width:70px}
+  .mat-heritage-p{font-size:16px;line-height:1.6}
+  .mat-heritage-in{padding:40px 16px}
+  .mat-study-flourish{margin-left:-10px}
+  .mat-footer-cols{grid-template-columns:1fr}
+  .mat-footer-bottom{flex-direction:column;gap:12px;text-align:center}
 }
 @media (max-width: 640px){
   .mat-toast{left:16px;right:16px;transform:translate(0,20px);width:auto}
