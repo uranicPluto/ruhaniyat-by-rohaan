@@ -1308,10 +1308,25 @@ export default function MehndiAtelierTemplate({
     if (!el) return
     const ctx = gsap.context(() => {
       const bar = el.querySelector(".mat-progress i") as HTMLElement | null
+      const wrap = el.querySelector(".mat-navbar-wrap") as HTMLElement | null
       const navbar = el.querySelector(".mat-navbar") as HTMLElement | null
       const band = el.querySelector(".mat-band") as HTMLElement | null
       // once the brand band has scrolled away, the nav picks up the wordmark and the bag
-      const stick = () => navbar?.classList.toggle("is-stuck", !!band && band.getBoundingClientRect().bottom <= 1)
+      const stick = () => {
+        if (!band || !navbar) return
+        const isStuck = band.getBoundingClientRect().bottom <= 1
+        if (isStuck) {
+          if (!navbar.classList.contains("is-stuck")) {
+            if (wrap) wrap.style.minHeight = `${navbar.offsetHeight}px`
+            navbar.classList.add("is-stuck")
+          }
+        } else {
+          if (navbar.classList.contains("is-stuck")) {
+            navbar.classList.remove("is-stuck")
+            if (wrap) wrap.style.minHeight = ""
+          }
+        }
+      }
       ScrollTrigger.create({
         trigger: el,
         start: "top top",
@@ -1643,59 +1658,61 @@ export default function MehndiAtelierTemplate({
       </div>
 
       {/* tabbed nav: sticks, picks up the wordmark and the bag when it does */}
-      <header className="mat-navbar">
-        <Brocade className="mat-navbar-edge" />
-        <div className="mat-navbar-in">
-          <button type="button" className="mat-mini-mark" onClick={() => go("home")} tabIndex={-1} aria-hidden="true">
-            <Rosette size={18} /> {b.name.toUpperCase()}
-          </button>
-          <button type="button" className="mat-burger" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu((m) => !m)}>
-            <span className="mat-burger-lines" aria-hidden="true">
-              <i />
-              <i />
-            </span>
-            Menu
-          </button>
-          <nav className={"mat-nav" + (menu ? " is-open" : "")} aria-label="Primary">
-            {nav.map((n) => (
-              <div key={n.label} className={"mat-tab" + (n.children?.length ? " has-sub" : "")}>
-                <a
-                  href={n.href ?? "#"}
-                  onClick={(e) => {
-                    if (!n.href) e.preventDefault()
-                    go(n.label.toLowerCase())
-                  }}
-                >
-                  {n.label}
-                  {!!n.children?.length && <Icon name="chev" />}
-                </a>
-                {!!n.children?.length && (
-                  <div className="mat-sub">
-                    <Rosette size={16} className="mat-sub-rosette" />
-                    {n.children.map((c) => (
-                      <a
-                        key={c.label}
-                        href={c.href ?? "#"}
-                        onClick={(e) => {
-                          if (!c.href) e.preventDefault()
-                          go(c.label.toLowerCase())
-                        }}
-                      >
-                        {c.label}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </nav>
-          {bagButton("mat-mini-bag")}
-        </div>
-        <Brocade className="mat-navbar-edge" />
-        <div className="mat-progress" aria-hidden="true">
-          <i />
-        </div>
-      </header>
+      <div className="mat-navbar-wrap">
+        <header className="mat-navbar">
+          <Brocade className="mat-navbar-edge" />
+          <div className="mat-navbar-in">
+            <button type="button" className="mat-mini-mark" onClick={() => go("home")} tabIndex={-1} aria-hidden="true">
+              <Rosette size={18} /> {b.name.toUpperCase()}
+            </button>
+            <button type="button" className="mat-burger" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu((m) => !m)}>
+              <span className="mat-burger-lines" aria-hidden="true">
+                <i />
+                <i />
+              </span>
+              Menu
+            </button>
+            <nav className={"mat-nav" + (menu ? " is-open" : "")} aria-label="Primary">
+              {nav.map((n) => (
+                <div key={n.label} className={"mat-tab" + (n.children?.length ? " has-sub" : "")}>
+                  <a
+                    href={n.href ?? "#"}
+                    onClick={(e) => {
+                      if (!n.href) e.preventDefault()
+                      go(n.label.toLowerCase())
+                    }}
+                  >
+                    {n.label}
+                    {!!n.children?.length && <Icon name="chev" />}
+                  </a>
+                  {!!n.children?.length && (
+                    <div className="mat-sub">
+                      <Rosette size={16} className="mat-sub-rosette" />
+                      {n.children.map((c) => (
+                        <a
+                          key={c.label}
+                          href={c.href ?? "#"}
+                          onClick={(e) => {
+                            if (!c.href) e.preventDefault()
+                            go(c.label.toLowerCase())
+                          }}
+                        >
+                          {c.label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </nav>
+            {bagButton("mat-mini-bag")}
+          </div>
+          <Brocade className="mat-navbar-edge" />
+          <div className="mat-progress" aria-hidden="true">
+            <i />
+          </div>
+        </header>
+      </div>
 
       {/* hero */}
       <section className="mat-hero" aria-label="Hero">
@@ -2139,7 +2156,9 @@ const CSS = `
 .mat-only-narrow{display:none}
 
 /* navbar */
-.mat-navbar{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,color-mix(in oklab,var(--maroon) 90%,#fff) 0%,var(--maroon) 40%,var(--deep) 100%);color:var(--gold-hi);box-shadow:0 12px 28px -18px rgba(0,0,0,.55)}
+.mat-navbar-wrap{position:relative;width:100%}
+.mat-navbar{position:relative;width:100%;z-index:999;background:linear-gradient(180deg,color-mix(in oklab,var(--maroon) 90%,#fff) 0%,var(--maroon) 40%,var(--deep) 100%);color:var(--gold-hi);box-shadow:0 12px 28px -18px rgba(0,0,0,.55)}
+.mat-navbar.is-stuck{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;width:100% !important;z-index:1000 !important;box-shadow:0 14px 32px -12px rgba(0,0,0,.75)}
 .mat-navbar-edge{height:12px;opacity:.85}
 .mat-navbar-in{position:relative;display:flex;align-items:stretch;justify-content:center;height:52px;padding:0 clamp(12px,2.4cqw,32px)}
 .mat-nav{display:flex;align-items:stretch}
@@ -2435,20 +2454,56 @@ const CSS = `
   .mat-wordmark{justify-content:center;font-size:clamp(22px,6cqw,34px);letter-spacing:.04em}
   .mat-only-narrow{display:grid}
   .mat-only-wide{display:none}
-  .mat-navbar-in{display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 12px}
-  .mat-burger{display:flex;order:1;position:static;min-height:44px;min-width:44px;align-items:center;gap:8px;cursor:pointer}
-  .mat-mini-mark{position:static;order:2;opacity:0;transform:scale(0.92);transition:opacity .35s,transform .35s cubic-bezier(.2,.8,.2,1);font-size:clamp(12px,3.2cqw,15px);letter-spacing:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(210px,50vw);padding:0}
-  .mat-navbar.is-stuck .mat-mini-mark{opacity:1;transform:scale(1);pointer-events:auto}
-  .mat-mini-bag{position:static;order:3;opacity:1;transform:none;pointer-events:auto;min-width:44px;min-height:44px}
-  .mat-nav{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;padding:12px 18px 24px;background:color-mix(in oklab,var(--deep) 96%,var(--maroon));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:2px solid var(--gold);box-shadow:0 24px 48px -12px rgba(0,0,0,.65);max-height:calc(100vh - 56px);overflow-y:auto;z-index:100}
-  .mat-nav.is-open{display:flex;animation:mat-menu-slide .35s cubic-bezier(.16,1,.3,1)}
-  .mat-tab{flex-direction:column;border:0;border-bottom:1px solid color-mix(in oklab,var(--gold) 25%,transparent);padding:2px 0}
-  .mat-tab:last-child{border-bottom:0}
-  .mat-tab > a{padding:14px 6px;font-size:13.5px;letter-spacing:.18em;min-height:44px;display:flex;align-items:center}
+  .mat-navbar-in{display:flex;align-items:center;justify-content:flex-start;height:48px;padding:0 6px}
+  .mat-burger{display:none}
+  .mat-mini-mark{display:none}
+  .mat-navbar.is-stuck .mat-mini-mark{display:none}
+  .mat-mini-bag{display:none}
+  .mat-nav{
+    display:flex !important;
+    position:static !important;
+    flex-direction:row !important;
+    align-items:stretch !important;
+    flex:1 1 auto !important;
+    width:100% !important;
+    padding:0 !important;
+    background:none !important;
+    box-shadow:none !important;
+    border:0 !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    scrollbar-width:none !important;
+    -webkit-overflow-scrolling:touch !important;
+    white-space:nowrap !important;
+    max-height:none !important;
+  }
+  .mat-nav::-webkit-scrollbar{display:none}
+  .mat-tab{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:stretch !important;
+    border:0 !important;
+    border-left:1px solid color-mix(in oklab,var(--gold) 35%,transparent) !important;
+    padding:0 !important;
+    flex-shrink:0 !important;
+  }
+  .mat-tab:first-child{border-left:0 !important}
+  .mat-tab:last-child{border-right:1px solid color-mix(in oklab,var(--gold) 35%,transparent) !important}
+  .mat-tab > a{
+    display:flex !important;
+    align-items:center !important;
+    gap:5px !important;
+    padding:0 14px !important;
+    height:48px !important;
+    font:500 11px/1 var(--caps) !important;
+    letter-spacing:.18em !important;
+    text-transform:uppercase !important;
+    color:var(--gold-hi) !important;
+    white-space:nowrap !important;
+  }
+  .mat-tab > a svg{display:none}
   .mat-tab::after{display:none}
-  .mat-sub{position:static;opacity:1;visibility:visible;transform:none;min-width:0;padding:4px 0 12px 16px;background:none;border:0;box-shadow:none;display:flex;flex-direction:column;gap:4px}
-  .mat-sub::before,.mat-sub-rosette{display:none}
-  .mat-sub a{color:color-mix(in oklab,var(--gold-hi) 90%,#fff);font-size:16px;padding:10px 8px;min-height:44px;display:flex;align-items:center}
+  .mat-sub{display:none !important}
   .mat-hero{position:relative;display:block;height:calc(100svh - 48px);min-height:520px;max-height:850px;overflow:hidden}
   .mat-panel-l{position:absolute;inset:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;overflow:hidden;box-sizing:border-box;z-index:2}
   .mat-panel-r{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;box-sizing:border-box;z-index:3}
