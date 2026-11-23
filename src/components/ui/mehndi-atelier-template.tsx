@@ -1343,33 +1343,34 @@ export default function MehndiAtelierTemplate({
           .fromTo(".mat-navbar .mat-brocade", { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: "expo.inOut", transformOrigin: "50% 50%" }, 0.1)
           .from(".mat-tab", { y: -16, autoAlpha: 0, duration: 0.8, stagger: 0.05 }, 0.45)
 
-        // hero: panels open like doors, the frame and filigree draw, the window rises
-        proxy.grow = 0
-        proxy.open = 0
-        paint()
-        gsap
-          .timeline({ defaults: { ease: "expo.out" }, delay: 0.15 })
-          .fromTo(".mat-panel-l", { clipPath: wide ? "inset(0 100% 0 0)" : "inset(0 0 100% 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 1.5, ease: "expo.inOut" }, 0)
-          .fromTo(".mat-panel-r", { clipPath: wide ? "inset(0 0 0 100%)" : "inset(100% 0 0 0)" }, { clipPath: "inset(0 0 0 0%)", duration: 1.5, ease: "expo.inOut" }, 0.08)
-          .fromTo(".mat-hero-frame i", { scaleX: 0, scaleY: 0 }, { scaleX: 1, scaleY: 1, duration: 1.6, ease: "expo.inOut", stagger: 0.06 }, 0.5)
-          .fromTo(".mat-hero .mat-filigree .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 2.4, ease: "power2.inOut", stagger: 0.02 }, 0.6)
-          .from(".mat-hero .mat-filigree .mat-fl", { autoAlpha: 0, duration: 1, stagger: 0.015 }, 1.4)
-          .fromTo(".mat-split-mandala .mat-ring path", { "--draw": 1 }, { "--draw": 0, duration: 2.4, ease: "power2.inOut", stagger: 0.003 }, 0.7)
-          .from(".mat-split-mandala", { rotate: -90, duration: 2.8 }, 0.5)
-          .from(".mat-hero-title .mat-word", { yPercent: 115, rotate: 3, duration: 1.4, stagger: 0.14 }, 1.0)
-          .fromTo(".mat-hero-flourish .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 1.6, ease: "power2.inOut" }, 1.4)
-          .from(".mat-hero-flourish .mat-fl", { autoAlpha: 0, scale: 0, transformOrigin: "50% 50%", duration: 0.8, stagger: 0.04 }, 1.7)
-          .from(".mat-panel-l .mat-rise", { y: 22, autoAlpha: 0, duration: 1, stagger: 0.08 }, 1.3)
-          .to(proxy, { grow: 1, duration: 1.8, ease: "expo.inOut", onUpdate: paint }, 0.7)
-          .fromTo(".mat-win-line", { "--draw": 1 }, { "--draw": 0, duration: 2, ease: "power2.inOut", stagger: 0.15 }, 1.1)
-          .fromTo(".mat-win-img", { scale: 1.25 }, { scale: 1, duration: 2.6, ease: "power3.out" }, 0.7)
-          .from(".mat-hero-seal", { scale: 0, rotate: -180, duration: 1.4, ease: "back.out(1.6)" }, 1.8)
-          .from(".mat-panel-r .mat-rise", { y: 22, autoAlpha: 0, duration: 1, stagger: 0.08 }, 1.6)
-
-        // hero scroll: the arch swings open into the whole panel; the mandala turns
-        // On desktop: pins .mat-hero right when the top brand band has scrolled away
-        // On mobile: pins .mat-panel-r when it scrolls into view below the navbar so the user watches the arch morph
+        // On desktop: keep original web page behavior (both panels animate simultaneously side-by-side)
+        // On mobile: play both section animations separately (first Panel L pins & animates, then Panel R pins & animates)
         if (wide) {
+          // Original desktop hero entrance
+          proxy.grow = 0
+          proxy.open = 0
+          paint()
+
+          gsap
+            .timeline({ defaults: { ease: "expo.out" }, delay: 0.15 })
+            .fromTo(".mat-panel-l", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 1.5, ease: "expo.inOut" }, 0)
+            .fromTo(".mat-panel-r", { clipPath: "inset(0 0 0 100%)" }, { clipPath: "inset(0 0 0 0%)", duration: 1.5, ease: "expo.inOut" }, 0.08)
+            .fromTo(".mat-hero-frame i", { scaleX: 0, scaleY: 0 }, { scaleX: 1, scaleY: 1, duration: 1.6, ease: "expo.inOut", stagger: 0.06 }, 0.5)
+            .fromTo(".mat-hero .mat-filigree .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 2.4, ease: "power2.inOut", stagger: 0.02 }, 0.6)
+            .from(".mat-hero .mat-filigree .mat-fl", { autoAlpha: 0, duration: 1, stagger: 0.015 }, 1.4)
+            .fromTo(".mat-split-mandala .mat-ring path", { "--draw": 1 }, { "--draw": 0, duration: 2.4, ease: "power2.inOut", stagger: 0.003 }, 0.7)
+            .from(".mat-split-mandala", { rotate: -90, duration: 2.8 }, 0.5)
+            .from(".mat-hero-title .mat-word", { yPercent: 115, rotate: 3, duration: 1.4, stagger: 0.14 }, 1.0)
+            .fromTo(".mat-hero-flourish .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 1.6, ease: "power2.inOut" }, 1.4)
+            .from(".mat-hero-flourish .mat-fl", { autoAlpha: 0, scale: 0, transformOrigin: "50% 50%", duration: 0.8, stagger: 0.04 }, 1.7)
+            .from(".mat-panel-l .mat-rise", { y: 22, autoAlpha: 0, duration: 1, stagger: 0.08 }, 1.3)
+            .to(proxy, { grow: 1, duration: 1.8, ease: "expo.inOut", onUpdate: paint }, 0.7)
+            .fromTo(".mat-win-line", { "--draw": 1 }, { "--draw": 0, duration: 2, ease: "power2.inOut", stagger: 0.15 }, 1.1)
+            .fromTo(".mat-win-img", { scale: 1.25 }, { scale: 1, duration: 2.6, ease: "power3.out" }, 0.7)
+            .from(".mat-hero-seal", { scale: 0, rotate: -180, duration: 1.4, ease: "back.out(1.6)" }, 1.8)
+            .from(".mat-panel-r .mat-rise", { y: 22, autoAlpha: 0, duration: 1, stagger: 0.08 }, 1.6)
+
+          // Original desktop hero scroll pin
           const heroScrollTl = gsap.timeline({
             scrollTrigger: {
               trigger: ".mat-hero",
@@ -1392,7 +1393,64 @@ export default function MehndiAtelierTemplate({
             .to(".mat-hero-copy", { yPercent: 20, autoAlpha: 0.2, ease: "none" }, 0)
             .to(".mat-hero .mat-filigree", { scale: 1.12, ease: "none" }, 0)
         } else {
-          const mobileHeroScrollTl = gsap.timeline({
+          // MOBILE: Play both section animations separately!
+          proxy.grow = 1
+          proxy.open = 0
+          paint()
+
+          // 1. Section 1 (Panel L) Entrance Animation on page load
+          gsap
+            .timeline({ defaults: { ease: "expo.out" }, delay: 0.15 })
+            .fromTo(".mat-panel-l", { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 1.4, ease: "expo.inOut" }, 0)
+            .fromTo(".mat-panel-l .mat-filigree .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 2.2, ease: "power2.inOut", stagger: 0.02 }, 0.4)
+            .from(".mat-panel-l .mat-filigree .mat-fl", { autoAlpha: 0, duration: 1, stagger: 0.015 }, 1.1)
+            .fromTo(".mat-split-mandala.is-l .mat-ring path", { "--draw": 1 }, { "--draw": 0, duration: 2.2, ease: "power2.inOut", stagger: 0.003 }, 0.5)
+            .from(".mat-split-mandala.is-l", { rotate: -90, duration: 2.5 }, 0.4)
+            .from(".mat-hero-title .mat-word", { yPercent: 115, rotate: 3, duration: 1.3, stagger: 0.14 }, 0.8)
+            .fromTo(".mat-hero-flourish .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 1.4, ease: "power2.inOut" }, 1.1)
+            .from(".mat-hero-flourish .mat-fl", { autoAlpha: 0, scale: 0, transformOrigin: "50% 50%", duration: 0.8, stagger: 0.04 }, 1.3)
+            .from(".mat-panel-l .mat-rise", { y: 22, autoAlpha: 0, duration: 1, stagger: 0.08 }, 1.1)
+
+          // Section 1 (Panel L) Scroll Pin Animation: plays separately when Panel L reaches navbar
+          const mobilePanelLTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: ".mat-panel-l",
+              start: () => "top " + (navbar?.offsetHeight || 48) + "px",
+              end: "+=500",
+              pin: true,
+              scrub: 0.6,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          })
+
+          mobilePanelLTl
+            .to(".mat-split-mandala.is-l", { rotate: 80, ease: "none" }, 0)
+            .to(".mat-hero-copy", { yPercent: 18, autoAlpha: 0.25, ease: "none" }, 0)
+            .to(".mat-panel-l .mat-hero-fil", { scale: 1.12, ease: "none" }, 0)
+
+          // 2. Section 2 (Panel R) Entrance Animation: triggers when Panel R enters view
+          gsap
+            .timeline({
+              scrollTrigger: {
+                trigger: ".mat-panel-r",
+                start: "top 85%",
+                toggleActions: "play none none none",
+              },
+              defaults: { ease: "expo.out" },
+            })
+            .fromTo(".mat-panel-r", { clipPath: "inset(100% 0 0 0)" }, { clipPath: "inset(0 0 0 0%)", duration: 1.4, ease: "expo.inOut" }, 0)
+            .fromTo(".mat-panel-r .mat-filigree .mat-dr", { "--draw": 1 }, { "--draw": 0, duration: 2.2, ease: "power2.inOut", stagger: 0.02 }, 0.3)
+            .from(".mat-panel-r .mat-filigree .mat-fl", { autoAlpha: 0, duration: 1, stagger: 0.015 }, 1.0)
+            .fromTo(".mat-split-mandala.is-r .mat-ring path", { "--draw": 1 }, { "--draw": 0, duration: 2.2, ease: "power2.inOut", stagger: 0.003 }, 0.4)
+            .from(".mat-split-mandala.is-r", { rotate: -90, duration: 2.5 }, 0.3)
+            .fromTo(".mat-win-line", { "--draw": 1 }, { "--draw": 0, duration: 2, ease: "power2.inOut", stagger: 0.15 }, 0.4)
+            .fromTo(".mat-win-img", { scale: 1.25 }, { scale: 1, duration: 2.4, ease: "power3.out" }, 0.2)
+            .from(".mat-hero-seal", { scale: 0, rotate: -180, duration: 1.4, ease: "back.out(1.6)" }, 0.8)
+            .from(".mat-panel-r .mat-rise", { y: 22, autoAlpha: 0, duration: 1, stagger: 0.08 }, 0.7)
+
+          // Section 2 (Panel R) Scroll Pin Animation: plays separately when Panel R reaches navbar
+          const mobilePanelRTl = gsap.timeline({
             scrollTrigger: {
               trigger: ".mat-panel-r",
               start: () => "top " + (navbar?.offsetHeight || 48) + "px",
@@ -1404,7 +1462,7 @@ export default function MehndiAtelierTemplate({
             },
           })
 
-          mobileHeroScrollTl
+          mobilePanelRTl
             .to(proxy, {
               open: 1,
               ease: "none",
@@ -2392,9 +2450,9 @@ const CSS = `
   .mat-sub{position:static;opacity:1;visibility:visible;transform:none;min-width:0;padding:4px 0 12px 16px;background:none;border:0;box-shadow:none;display:flex;flex-direction:column;gap:4px}
   .mat-sub::before,.mat-sub-rosette{display:none}
   .mat-sub a{color:color-mix(in oklab,var(--gold-hi) 90%,#fff);font-size:16px;padding:10px 8px;min-height:44px;display:flex;align-items:center}
-  .mat-hero{grid-template-columns:1fr;grid-template-rows:auto auto;height:auto;min-height:0}
-  .mat-panel-l{min-height:max(500px,calc(100svh - 48px));display:flex;flex-direction:column;justify-content:center}
-  .mat-panel-r{height:calc(100svh - 48px);min-height:540px;max-height:850px}
+  .mat-hero{grid-template-columns:1fr;grid-template-rows:auto auto;height:auto;min-height:0;overflow:visible}
+  .mat-panel-l{min-height:max(500px,calc(100svh - 48px));display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+  .mat-panel-r{height:calc(100svh - 48px);min-height:540px;max-height:850px;overflow:hidden}
   .mat-split-mandala{width:min(110%,560px)}
   .mat-split-mandala.is-l{right:auto;left:50%;top:100%;translate:-50% -50%}
   .mat-split-mandala.is-r{left:50%;top:0;translate:-50% -50%}
