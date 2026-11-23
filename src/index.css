@@ -6,3 +6,74 @@ html, body {
   width: 100%;
   min-height: 100%;
 }
+
+/* Lenis Smooth Scroll Engine */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* GPU Hardware Acceleration & Layer Promotion */
+.mat-hero,
+.mat-panel,
+.mat-win-img,
+.mat-split-mandala,
+.mat-hero-copy,
+.mat-hero-seal,
+.mat-seal-turn {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.mat-split-mandala {
+  will-change: transform;
+}
+
+.mat-hero-copy {
+  will-change: transform, opacity;
+}
+
+.mat-seal-turn {
+  will-change: transform;
+}
+
+/* Off-screen Section Render Deferral (60fps Scroll Boost) */
+.mat-sellers,
+.mat-edit,
+.mat-heritage,
+.mat-studysec,
+.mat-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 800px;
+}
+
+/* Custom Gold Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #140508;
+}
+::-webkit-scrollbar-thumb {
+  background: #947138;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c99e52;
+}

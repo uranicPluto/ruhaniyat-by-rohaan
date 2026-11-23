@@ -1666,7 +1666,7 @@ export default function MehndiAtelierTemplate({
           <Mandala seed={seed} className="mat-split-mandala is-r" />
           <Filigree corner="tr" seed={seed + 4} className="mat-hero-fil is-tr" />
           <Filigree corner="br" seed={seed + 6} className="mat-hero-fil is-br" />
-          <img ref={winImg} className="mat-win-img" src={heroArt.src} alt={heroArt.alt ?? ""} style={{ objectPosition: heroArt.focus }} decoding="async" />
+          <img ref={winImg} className="mat-win-img" src={heroArt.src} alt={heroArt.alt ?? ""} style={{ objectPosition: heroArt.focus }} fetchPriority="high" decoding="async" />
           <div className="mat-win-shade" aria-hidden="true" />
           <svg ref={winSvg} className="mat-win-lines" aria-hidden="true" preserveAspectRatio="none">
             <path ref={winOuter} className="mat-win-line mat-dr" pathLength={1} fill="none" stroke="currentColor" strokeWidth="1.6" />

@@ -15,4 +15,18 @@ export default defineConfig({
     port: 5173,
     host: true,
   },
+  build: {
+    target: 'esnext',
+    minify: 'esbuild',
+    cssMinify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-gsap': ['gsap'],
+          'vendor-lenis': ['lenis'],
+        },
+      },
+    },
+  },
 })
