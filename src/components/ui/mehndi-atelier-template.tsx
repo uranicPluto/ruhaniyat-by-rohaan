@@ -1717,11 +1717,15 @@ export default function MehndiAtelierTemplate({
 
       {/* hero */}
       <section className="mat-hero" aria-label="Hero">
+        {/* Part 1: The House / Intro */}
         <div className="mat-panel mat-panel-l">
           <Damask className="mat-panel-damask" />
           <Mandala seed={seed} className="mat-split-mandala is-l" />
           <Filigree corner="tl" seed={seed} className="mat-hero-fil is-tl" />
+          <Filigree corner="tr" seed={seed + 1} className="mat-hero-fil is-tr mat-only-narrow" />
           <Filigree corner="bl" seed={seed + 2} className="mat-hero-fil is-bl" />
+          <Filigree corner="br" seed={seed + 3} className="mat-hero-fil is-br mat-only-narrow" />
+          <div className="mat-panel-frame mat-only-narrow" aria-hidden="true" />
           <div className="mat-hero-copy">
             <p className="mat-kicker mat-rise">
               <Rosette size={12} /> {h.kicker} <Rosette size={12} />
@@ -1742,12 +1746,19 @@ export default function MehndiAtelierTemplate({
             </div>
             <p className="mat-est mat-rise">{b.est}</p>
           </div>
+          <Brocade className="mat-panel-sill mat-only-narrow" />
         </div>
+
+        {/* Part 2: Couture / Bridal Arch */}
         <div className="mat-panel mat-panel-r" ref={panelRef}>
+          <Brocade className="mat-panel-sill is-top mat-only-narrow" />
           <Damask className="mat-panel-damask" />
           <Mandala seed={seed} className="mat-split-mandala is-r" />
+          <Filigree corner="tl" seed={seed + 3} className="mat-hero-fil is-tl mat-only-narrow" />
           <Filigree corner="tr" seed={seed + 4} className="mat-hero-fil is-tr" />
+          <Filigree corner="bl" seed={seed + 5} className="mat-hero-fil is-bl mat-only-narrow" />
           <Filigree corner="br" seed={seed + 6} className="mat-hero-fil is-br" />
+          <div className="mat-panel-frame mat-only-narrow" aria-hidden="true" />
           <img ref={winImg} className="mat-win-img" src={heroArt.src} alt={heroArt.alt ?? ""} style={{ objectPosition: heroArt.focus }} fetchPriority="high" decoding="async" />
           <div className="mat-win-shade" aria-hidden="true" />
           <svg ref={winSvg} className="mat-win-lines" aria-hidden="true" preserveAspectRatio="none">
@@ -1764,15 +1775,18 @@ export default function MehndiAtelierTemplate({
               {h.photoCta} <Icon name="arrow" />
             </button>
           </div>
+          <Brocade className="mat-panel-sill mat-only-narrow" />
         </div>
-        <div className="mat-hero-frame" aria-hidden="true">
+
+        {/* Desktop-only outer frame, vertical center split, and bottom sill */}
+        <div className="mat-hero-frame mat-only-wide" aria-hidden="true">
           <i className="is-t" />
           <i className="is-b" />
           <i className="is-l" />
           <i className="is-r" />
         </div>
-        <Brocade className="mat-hero-split" vertical />
-        <Brocade className="mat-hero-sill" />
+        <Brocade className="mat-hero-split mat-only-wide" vertical />
+        <Brocade className="mat-hero-sill mat-only-wide" />
       </section>
 
       {/* best sellers */}
@@ -2218,6 +2232,9 @@ const CSS = `
 .mat-hero-frame .is-r{right:0;box-shadow:-4px 0 0 -3px var(--gold)}
 .mat-hero-split{position:absolute;left:50%;top:0;bottom:16px;margin-left:-8px;z-index:6}
 .mat-hero-sill{position:absolute;left:0;right:0;bottom:0;z-index:6;background:var(--deep)}
+.mat-panel-frame{position:absolute;inset:12px;border:1px solid color-mix(in oklab,var(--gold) 65%,transparent);pointer-events:none;z-index:5}
+.mat-panel-sill{position:absolute;left:0;right:0;bottom:0;z-index:6;background:var(--deep);height:12px}
+.mat-panel-sill.is-top{bottom:auto;top:0}
 
 /* twin heading + products */
 .mat-sellers{position:relative;z-index:1;padding:clamp(64px,8cqw,120px) clamp(16px,3.2cqw,48px) clamp(48px,6cqw,96px);text-align:center}
@@ -2450,13 +2467,12 @@ const CSS = `
   .mat-sub{position:static;opacity:1;visibility:visible;transform:none;min-width:0;padding:4px 0 12px 16px;background:none;border:0;box-shadow:none;display:flex;flex-direction:column;gap:4px}
   .mat-sub::before,.mat-sub-rosette{display:none}
   .mat-sub a{color:color-mix(in oklab,var(--gold-hi) 90%,#fff);font-size:16px;padding:10px 8px;min-height:44px;display:flex;align-items:center}
-  .mat-hero{grid-template-columns:1fr;grid-template-rows:auto auto;height:auto;min-height:0;overflow:visible}
-  .mat-panel-l{min-height:max(500px,calc(100svh - 48px));display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-  .mat-panel-r{height:calc(100svh - 48px);min-height:540px;max-height:850px;overflow:hidden}
-  .mat-split-mandala{width:min(110%,560px)}
-  .mat-split-mandala.is-l{right:auto;left:50%;top:100%;translate:-50% -50%}
-  .mat-split-mandala.is-r{left:50%;top:0;translate:-50% -50%}
+  .mat-hero{display:flex;flex-direction:column;height:auto;min-height:0;overflow:visible}
+  .mat-panel-l{position:relative;width:100%;height:calc(100svh - 48px);min-height:520px;max-height:850px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;box-sizing:border-box}
+  .mat-panel-r{position:relative;width:100%;height:calc(100svh - 48px);min-height:540px;max-height:850px;overflow:hidden;box-sizing:border-box}
+  .mat-hero-frame{display:none}
   .mat-hero-split{display:none}
+  .mat-hero-sill{display:none}
   .mat-hero-title{font-size:clamp(48px,14cqw,96px)}
   .mat-twin{grid-template-columns:1fr;gap:12px}
   .mat-twin-l,.mat-twin-r{text-align:center}
